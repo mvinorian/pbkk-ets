@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -29,9 +30,12 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/create', function () {
-    return Inertia::render('BarangCreate');
-})->middleware(['auth', 'verified'])->name('create');
+Route::middleware('auth')->group(function () {
+    Route::get('/create', [BarangController::class, 'form'])->name('create');
+    Route::post('/create', [BarangController::class, 'create'])->name('barang.create');
+    Route::get('/jenis-barang', [BarangController::class, 'jenisBarang'])->name('barang.jenis');
+    Route::get('/kondisi-barang', [BarangController::class, 'kondisiBarang'])->name('barang.kondisi');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

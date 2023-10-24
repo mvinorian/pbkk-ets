@@ -1,6 +1,6 @@
 export type Barang = {
-    jenis: string;
-    kondisi: string;
+    jenis: number;
+    kondisi: number;
     keterangan: string;
     kecacatan?: string;
     jumlah: number;

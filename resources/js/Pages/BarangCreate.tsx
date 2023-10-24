@@ -1,24 +1,34 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import { Barang } from "@/types/barang";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import InputLabel from "@/Components/InputLabel";
 import Dropdown from "@/Components/Dropdown";
 import { Listbox } from "@headlessui/react";
-import SelectInput from "@/Components/SelectInput";
 import InputError from "@/Components/InputError";
 import AreaInput from "@/Components/AreaInput";
 import TextInput from "@/Components/TextInput";
 import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function Dashboard({ auth }: PageProps) {
-    const { data, setData, post, processing, errors } = useForm<Barang>();
-
-    const setJenis = (value: string) => setData("jenis", value);
+export default function Dashboard({
+    auth,
+    jenis,
+    kondisi,
+}: PageProps<{
+    jenis: { id: number; jenis: string }[];
+    kondisi: { id: number; kondisi: string }[];
+}>) {
+    const { data, setData, post, processing, errors } = useForm<Barang>({
+        jenis: 1,
+        kondisi: 1,
+        jumlah: 0,
+        keterangan: "",
+    });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        console.log(data);
         post(route("barang.create"));
     };
 
@@ -31,7 +41,7 @@ export default function Dashboard({ auth }: PageProps) {
                 </h2>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Tambah Barang" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -43,17 +53,21 @@ export default function Dashboard({ auth }: PageProps) {
                         <div>
                             <InputLabel htmlFor="jenis" value="Jenis Barang" />
 
-                            <SelectInput
+                            <select
                                 id="jenis"
                                 name="jenis"
-                                options={["ayam", "bebek", "angsa"]}
-                                className="mt-1 block w-full"
                                 value={data.jenis}
-                                isFocused={true}
                                 onChange={(e) =>
-                                    setData("jenis", e.target.value)
+                                    setData("jenis", parseInt(e.target.value))
                                 }
-                            />
+                                className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm "
+                            >
+                                {jenis.map(({ id, jenis }, index) => (
+                                    <option key={index} value={id}>
+                                        {jenis}
+                                    </option>
+                                ))}
+                            </select>
 
                             <InputError
                                 message={errors.jenis}
@@ -67,17 +81,21 @@ export default function Dashboard({ auth }: PageProps) {
                                 value="Kondisi Barang"
                             />
 
-                            <SelectInput
+                            <select
                                 id="kondisi"
                                 name="kondisi"
-                                options={["ayam", "bebek", "angsa"]}
-                                className="mt-1 block w-full"
                                 value={data.kondisi}
-                                isFocused={true}
                                 onChange={(e) =>
-                                    setData("kondisi", e.target.value)
+                                    setData("kondisi", parseInt(e.target.value))
                                 }
-                            />
+                                className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm "
+                            >
+                                {kondisi.map(({ id, kondisi }, index) => (
+                                    <option key={index} value={id}>
+                                        {kondisi}
+                                    </option>
+                                ))}
+                            </select>
 
                             <InputError
                                 message={errors.kondisi}
@@ -175,6 +193,7 @@ export default function Dashboard({ auth }: PageProps) {
 
                         <div className="flex items-center justify-end mt-4">
                             <PrimaryButton
+                                type="submit"
                                 className="ml-4"
                                 disabled={processing}
                             >
